@@ -27,9 +27,15 @@ function App() {
     const policy = policyList.includes(product);
     
     // if not allow to order when the stock is out of stock and the number of goods < 0, or the number of goods in the basket is greater than the number of goods in stock
-    if (policy && (product.variants[0].inventory_quantity < 0 || cart[name] >= product.variants[0].inventory_quantity)) return;
+    if (policy && (product.variants[0].inventory_quantity < 0 || cart[name] >= product.variants[0].inventory_quantity)) {
+      alert("Sold Out");
+      return;
+    }
     // if allow to order when the stock is out of stock and not allowed to buy regardless of quantity or the number of items in the basket is more than 10
-    if (!policy && !management && cart[name] >= 10) return;
+    if (!policy && !management && cart[name] >= 10) {
+      alert("This item can only be purchased 10 pieces");
+      return;
+    }
     // if cart not have name of the key === name parameters
     if (!isHaveProduct) {
       setCart(prevState => ({
@@ -45,11 +51,24 @@ function App() {
     }))
   }
 
+  console.log(cart);
+
   return (
     <div className="App">
       <div className="search">
         <input type="text" placeholder="Search Products" value={text} onChange={(e) => setText(e.target.value)} />
         <button onClick={search}>Search</button>
+        <div className="cart-button">
+          <button>Cart</button>
+          <ul className="cart-dropdown-content">
+            {Object.keys(cart).length > 0 ? Object.keys(cart).map(product => (
+                <li key={product} className="cart-product">{product}: {cart[product]}</li>
+              )) : (
+                <li className="cart-product">There are no items available</li>
+              )
+            }
+          </ul>
+        </div>
       </div>
       <div className="product-container">
         {searchListProducts.length > 0 ? searchListProducts.map(product => (
