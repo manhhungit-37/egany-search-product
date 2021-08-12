@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import data from "./database.json";
 
 function App() {
-  const [text, setText] = useState("");
+  const textRef = useRef("");
   const [listProducts, setListProducts] = useState([]);
   const [searchListProducts, setSearchListProducts] = useState([]);
   const [cart, setCart] = useState({});
+  //list product allowed to buy regardless of quantity
   const managementList = listProducts.filter(product => product.variants[0].inventory_management === null);
+  //list Prohibit ordering when out of stock
   const policyList = listProducts.filter(product => product.variants[0].inventory_policy === "deny");
 
   useEffect(() => {
@@ -16,7 +18,8 @@ function App() {
   }, [])
 
   function search() {
-    const newListProducts = listProducts.filter(product => product.title.toUpperCase().includes(text.toUpperCase()));
+    const newListProducts = listProducts.filter(product => product.title.toLowerCase().indexOf(textRef.current.value.toLowerCase()) !== -1);
+    console.log(newListProducts);
     setSearchListProducts(newListProducts);
   }
 
@@ -51,12 +54,10 @@ function App() {
     }))
   }
 
-  console.log(cart);
-
   return (
     <div className="App">
       <div className="search">
-        <input type="text" placeholder="Search Products" value={text} onChange={(e) => setText(e.target.value)} />
+        <input type="text" placeholder="Search Products" ref={textRef} />
         <button onClick={search}>Search</button>
         <div className="cart-button">
           <button>Cart</button>
